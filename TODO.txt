@@ -1,0 +1,12 @@
+restructure configuration a bit, to allow for "command executed ok", "command needs parameters (help text)" messages and such
+maybe add command aliases?
+add classes to represent configuration
+  CommandList
+    getCommand(name) returns command object based on name or alias
+  Command
+    string name
+    optional list<string> aliases
+    bool needsArguments
+    list<string> urls
+    string okmessage
+    optional string needArgumentsMessage
