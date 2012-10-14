@@ -1,5 +1,7 @@
 package no.openshell.oddstr13.jsonapiregistercmd;
 
+import java.io.IOException;
+import java.net.URL;
 import java.lang.String;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,21 +12,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.alecgorge.minecraft.jsonapi.JSONAPI;
-import com.alecgorge.minecraft.jsonapi.api.JSONAPIStream;
+import org.json.simpleForBukkit.JSONObject;
+import com.alecgorge.java.http.HttpRequest;
+import com.alecgorge.minecraft.jsonapi.api.JSONAPIStreamMessage;
+
 
 public class JSONAPIRegisterCMD extends JavaPlugin {
     private final static Logger logger = Logger.getLogger("Minecraft");
-    protected JSONAPI JSONAPIHandle;
     protected String streamName = "registrationverify";
-    private JSONAPIStream stream = new VerifyStream();
+    protected String streamPushUrlString = "http://172.16.1.190:8000/jsonapi-landing-register/";
+    protected URL streamPushUrl;
 
 //    public JSONAPIRegisterCMD() {
 //    }
-
-    public JSONAPI getJSONAPI() {
-        return JSONAPIHandle;
-    }
 
     public String getStreamName() {
         return streamName;
@@ -43,7 +43,6 @@ public class JSONAPIRegisterCMD extends JavaPlugin {
         String name = this.getDescription().getName();
         String version = this.getDescription().getVersion();
         Plugin checkplugin = this.getServer().getPluginManager().getPlugin("JSONAPI");
-        Plugin checkplugin2 = this.getServer().getPluginManager().getPlugin("HeroicDeath");
         if (checkplugin == null) {
             logWarning(name + " cannot be loaded because JSONAPI is not enabled on the server!");
             getServer().getPluginManager().disablePlugin(this);
@@ -51,15 +50,12 @@ public class JSONAPIRegisterCMD extends JavaPlugin {
             log( name + " version " + version + " enabled." );
             try {
                 // Get handle to JSONAPI, add&register your custom listener
-                this.JSONAPIHandle = (JSONAPI) checkplugin;
             } catch (ClassCastException ex) {
                 ex.printStackTrace();
                 logWarning(name + " can't cast plugin handle as JSONAPI plugin!");
                 getServer().getPluginManager().disablePlugin(this);
             }
         }
-        JSONAPI JSONAPI = this.getJSONAPI();
-        JSONAPI.getStreamManager().registerStream(this.getStreamName(), stream);
     }
 
     @Override
@@ -75,7 +71,17 @@ public class JSONAPIRegisterCMD extends JavaPlugin {
             } else {
                 Player player = (Player) sender;
                 // do something
-                stream.addMessage(new VerifyMessage(getStreamName(), player.getName(), cmd.getName(), args));
+                try {
+                    streamPushUrl = new URL(streamPushUrlString);
+                    JSONObject jsonobj = new VerifyMessage(getStreamName(), player.getName(), cmd.getName(), args).toJSONObject();
+                    HttpRequest httpr = new HttpRequest(streamPushUrl);
+                    httpr.setMethod("POST");
+                    httpr.addPostValue("name", streamName);
+                    httpr.addPostValue("json", jsonobj.toJSONString());
+                    httpr.request();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
             return true;
         }
