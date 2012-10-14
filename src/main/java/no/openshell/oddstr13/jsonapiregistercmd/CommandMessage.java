@@ -1,18 +1,16 @@
 package no.openshell.oddstr13.jsonapiregistercmd;
 
-import java.lang.String;
-import java.util.logging.Logger;
-
 import org.json.simpleForBukkit.JSONObject;
 import com.alecgorge.minecraft.jsonapi.api.JSONAPIStreamMessage;
 
-public class VerifyMessage extends JSONAPIStreamMessage {
+public class CommandMessage extends JSONAPIStreamMessage {
     private String streamName;
     private String player;
     private String cmd;
     private String[] args;
 
-    public VerifyMessage(String streamName, String playername, String cmdname, String[] cmdargs) {
+    public CommandMessage(String streamName, String playername, String cmdname, String[] cmdargs) {
+//    public CommandMessage(String streamName, String playername, String cmdname) {
         this.streamName = streamName;
         this.player = playername;
         this.cmd = cmdname;

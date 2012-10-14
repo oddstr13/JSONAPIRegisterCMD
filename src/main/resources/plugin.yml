@@ -2,7 +2,3 @@ name: ${project.name}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 version: ${project.version}
 depend: [JSONAPI]
-commands:
-    verify:
-        description: This command is used to verify minecraft account.
-        usage: /<command> <code>

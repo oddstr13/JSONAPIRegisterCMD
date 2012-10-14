@@ -1,0 +1,6 @@
+commands:
+    verify:
+      - http://example.com/verify-landing.php
+      - http://example.org/verify-landing.php
+    examplecommand:
+      - http://example.com/command-landing.php
